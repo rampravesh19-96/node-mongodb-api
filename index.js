@@ -11,15 +11,7 @@ const connectDB = require("./connectMongo");
 connectDB();
 
 const BookModel = require("./models/book.model");
-// const redis = require('./redis')
 
-// const deleteKeys = async (pattern) => {
-//   const keys = await redis.keys(`${pattern}::*`)
-//   console.log(keys)
-//   if (keys.length > 0) {
-//     redis.del(keys)
-//   }
-// }
 
 app.get("/api/v1/books", async (req, res) => {
   const { limit = 5, orderBy = "name", sortBy = "asc", keyword } = req.query;
@@ -97,7 +89,6 @@ app.post("/api/v1/books", async (req, res) => {
       description,
     });
     const data = await book.save();
-    deleteKeys('Book')
     return res.status(200).json({
       msg: "Ok",
       data,
@@ -124,7 +115,6 @@ app.put("/api/v1/books/:id", async (req, res) => {
       },
       { new: true }
     );
-    deleteKeys('Book')
     return res.status(200).json({
       msg: "Ok",
       data,
@@ -139,7 +129,6 @@ app.put("/api/v1/books/:id", async (req, res) => {
 app.delete("/api/v1/books/:id", async (req, res) => {
   try {
     await BookModel.findByIdAndDelete(req.params.id);
-    deleteKeys('Book')
     return res.status(200).json({
       msg: "Ok",
     });
