@@ -28,10 +28,6 @@ app.get("/api/v1/books", async (req, res) => {
   const key = `Book::${JSON.stringify({query, page, limit, orderBy, sortBy})}`
   let response = null
   try {
-    const cache = await redis.get(key)
-    if (cache) {
-      response = JSON.parse(cache)
-    } else {
       const data = await BookModel.find(query)
       .skip(skip)
       .limit(limit)
@@ -45,11 +41,8 @@ app.get("/api/v1/books", async (req, res) => {
         totalPages: Math.ceil(totalItems / limit),
         limit: +limit,
         currentPage: page,
-      }
 
-      redis.setex(key, 600, JSON.stringify(response))
-    }
-    
+    }    
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
